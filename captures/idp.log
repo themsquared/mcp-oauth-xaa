@@ -1,0 +1,327 @@
+[idp] listening on :8001
+[idp] GET /jwks.json
+Host: idp:8001
+--> 200
+{
+  "keys": [
+    {
+      "kty": "RSA",
+      "key_ops": [
+        "verify"
+      ],
+      "n": "j3cHJIk5StyzRCBwmIPtvPfpxJiGmr14jPmZH594Lq4QqHiKVmEU-xiQrY3l2H3V-FE4gFqRJilzFkVXczmn5CXWJLGfGrpnUUtR-XpkY8cy7YeMNcFxH0dOmHltAqiBdNblYGKiXGph5HDxbsRav6gMc58zgQrZipEtUN3t3-po2BwYXn1dp5o7AkTDeV1BvShsDb_3dAgYqeV2xJbMx8hVlA4fKGdSxensxPr-WCXoRvkVJJk9rFW8EUk7V7PHXUfywFxS-xHDtb_Ms2qQuuTUETz9Y0VGJdkgHTfYFSu4Roe19ixT3lxFYajGr6OsotsG80LtWhcunC1rTVkxyQ",
+      "e": "AQAB",
+      "kid": "acme-idp-1",
+      "use": "sig",
+      "alg": "RS256"
+    }
+  ]
+}
+
+[idp] GET /.well-known/oauth-authorization-server
+Host: idp:8001
+--> 200
+{
+  "issuer": "http://idp:8001",
+  "token_endpoint": "http://idp:8001/token",
+  "jwks_uri": "http://idp:8001/jwks.json",
+  "grant_types_supported": [
+    "password",
+    "urn:ietf:params:oauth:grant-type:token-exchange"
+  ],
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic",
+    "client_secret_post"
+  ],
+  "identity_chaining_requested_token_types_supported": [
+    "urn:ietf:params:oauth:token-type:id-jag"
+  ]
+}
+
+[idp] POST /token
+Host: idp:8001
+Authorization: Basic YWNtZS1hZ2VudDphY21lLWFnZW50LWlkcC1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password
+&username=alice
+&password=alice
+&scope=openid
+--> 200
+{
+  "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwOi8vaWRwOjgwMDEiLCJzdWIiOiJVLTEwMDEiLCJhdWQiOiJhY21lLWFnZW50IiwiZW1haWwiOiJhbGljZUBhY21lLmV4YW1wbGUiLCJncm91cHMiOlsiZW5naW5lZXJpbmciXSwiaWF0IjoxNzkwNzAwNzI0LCJhdXRoX3RpbWUiOjE3OTA3MDA3MjQsImV4cCI6MTc5MDcwMTMyNCwiYW1yIjpbInB3ZCJdfQ.dBFgvnw1l_CpKmMqPP3icXRG8tJM7_h4D5RUh3P_EPLqoNLikYCmU3spF_mGwB-vh_eKRkqOX4POPsNHdIg1H88uhGEuBUP7exlEXMkQEi9yUIBvsghlUGgm-rowghhI9jQ1SxBZSkT7Q1l5jlN68o_szF3-byyu9ZGHwEi0bVJfaLNElma4q5sGjd4-oMRAexYKXXCKChfMLuSnDCi-ALvGpLMIvdZxz_WiNVI4i_xxhWCHzn_Y_dHzbyFGLbFkCFH20ezcdG1JJC2CgFuvXTnolHgxA8yWQIgXvvtz-8-mZZJxinYOX6HnAdTvE13upsKHtsO7w9xTzFzH01sMuw",
+  "access_token": "dae691a4a9e94e5ba779293d092b2908",
+  "token_type": "Bearer",
+  "scope": "openid",
+  "expires_in": 600
+}
+
+[idp] POST /token
+Host: idp:8001
+Authorization: Basic YWNtZS1hZ2VudDphY21lLWFnZW50LWlkcC1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange
+&requested_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid-jag
+&audience=http%3A%2F%2Fas%3A8002
+&resource=http%3A%2F%2Fgateway%3A3000%2Fmcp
+&scope=notes.read+notes.write
+&subject_token=eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwOi8vaWRwOjgwMDEiLCJzdWIiOiJVLTEwMDEiLCJhdWQiOiJhY21lLWFnZW50IiwiZW1haWwiOiJhbGljZUBhY21lLmV4YW1wbGUiLCJncm91cHMiOlsiZW5naW5lZXJpbmciXSwiaWF0IjoxNzkwNzAwNzI0LCJhdXRoX3RpbWUiOjE3OTA3MDA3MjQsImV4cCI6MTc5MDcwMTMyNCwiYW1yIjpbInB3ZCJdfQ.dBFgvnw1l_CpKmMqPP3icXRG8tJM7_h4D5RUh3P_EPLqoNLikYCmU3spF_mGwB-vh_eKRkqOX4POPsNHdIg1H88uhGEuBUP7exlEXMkQEi9yUIBvsghlUGgm-rowghhI9jQ1SxBZSkT7Q1l5jlN68o_szF3-byyu9ZGHwEi0bVJfaLNElma4q5sGjd4-oMRAexYKXXCKChfMLuSnDCi-ALvGpLMIvdZxz_WiNVI4i_xxhWCHzn_Y_dHzbyFGLbFkCFH20ezcdG1JJC2CgFuvXTnolHgxA8yWQIgXvvtz-8-mZZJxinYOX6HnAdTvE13upsKHtsO7w9xTzFzH01sMuw
+&subject_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid_token
+--> 200
+{
+  "issued_token_type": "urn:ietf:params:oauth:token-type:id-jag",
+  "access_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJvYXV0aC1pZC1qYWcrand0In0.eyJqdGkiOiJlNDZjNjRkODI2NTI0ZmNiYWI4MzgyZWRjNjcxNzZkMiIsImlzcyI6Imh0dHA6Ly9pZHA6ODAwMSIsInN1YiI6IlUtMTAwMSIsImVtYWlsIjoiYWxpY2VAYWNtZS5leGFtcGxlIiwiYXVkIjoiaHR0cDovL2FzOjgwMDIiLCJjbGllbnRfaWQiOiJhY21lLWFnZW50LW5vdGVzIiwic2NvcGUiOiJub3Rlcy5yZWFkIG5vdGVzLndyaXRlIiwiaWF0IjoxNzkwNzAwNzI0LCJleHAiOjE3OTA3MDEwMjQsImF1dGhfdGltZSI6MTc5MDcwMDcyNCwiYW1yIjpbInB3ZCJdLCJyZXNvdXJjZSI6Imh0dHA6Ly9nYXRld2F5OjMwMDAvbWNwIn0.Rn0eglkK1LN--3lt8vE-GxDvvDrk9Qkx9681a6L3YE7ayeQbcmj_pEj-_8HkY_LOGbe-jiAUuM69Vas7xDpEMijgiWakhaSWopF9IjO8XSKlQiZSCDH7Slq9kpI3LVBV-4gzE5X1rRwwGmgJJU_O-hQF5X6NWnrSkTkITCZzey6glbPszyJqlWhgInDPZUEwIG2TS3u_32dwOyk3qlces77ahuYpoC5MrINvgsnYsLUtClyvIlLz9iFFR881qfMTaOT13MGal6vyLdLukAFUbTbDFf780XH8TlX-0Wl92By0u2FNFMyx9lxaSbomvsP8Rd1SmtLqOQjdVWSzgqTKfg",
+  "token_type": "N_A",
+  "scope": "notes.read notes.write",
+  "expires_in": 300
+}
+
+[idp] GET /jwks.json
+Host: idp:8001
+--> 200
+{
+  "keys": [
+    {
+      "kty": "RSA",
+      "key_ops": [
+        "verify"
+      ],
+      "n": "j3cHJIk5StyzRCBwmIPtvPfpxJiGmr14jPmZH594Lq4QqHiKVmEU-xiQrY3l2H3V-FE4gFqRJilzFkVXczmn5CXWJLGfGrpnUUtR-XpkY8cy7YeMNcFxH0dOmHltAqiBdNblYGKiXGph5HDxbsRav6gMc58zgQrZipEtUN3t3-po2BwYXn1dp5o7AkTDeV1BvShsDb_3dAgYqeV2xJbMx8hVlA4fKGdSxensxPr-WCXoRvkVJJk9rFW8EUk7V7PHXUfywFxS-xHDtb_Ms2qQuuTUETz9Y0VGJdkgHTfYFSu4Roe19ixT3lxFYajGr6OsotsG80LtWhcunC1rTVkxyQ",
+      "e": "AQAB",
+      "kid": "acme-idp-1",
+      "use": "sig",
+      "alg": "RS256"
+    }
+  ]
+}
+
+[idp] GET /.well-known/oauth-authorization-server
+Host: idp:8001
+--> 200
+{
+  "issuer": "http://idp:8001",
+  "token_endpoint": "http://idp:8001/token",
+  "jwks_uri": "http://idp:8001/jwks.json",
+  "grant_types_supported": [
+    "password",
+    "urn:ietf:params:oauth:grant-type:token-exchange"
+  ],
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic",
+    "client_secret_post"
+  ],
+  "identity_chaining_requested_token_types_supported": [
+    "urn:ietf:params:oauth:token-type:id-jag"
+  ]
+}
+
+[idp] POST /token
+Host: idp:8001
+Authorization: Basic YWNtZS1hZ2VudDphY21lLWFnZW50LWlkcC1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password
+&username=bob
+&password=bob
+&scope=openid
+--> 200
+{
+  "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwOi8vaWRwOjgwMDEiLCJzdWIiOiJVLTEwMDIiLCJhdWQiOiJhY21lLWFnZW50IiwiZW1haWwiOiJib2JAYWNtZS5leGFtcGxlIiwiZ3JvdXBzIjpbImNvbnRyYWN0b3JzIl0sImlhdCI6MTc5MDcwMDcyNCwiYXV0aF90aW1lIjoxNzkwNzAwNzI0LCJleHAiOjE3OTA3MDEzMjQsImFtciI6WyJwd2QiXX0.M4fSLmT_tyxuXfJaz66sm-dedxixmXVSA8dAFVS70TfnrCycjicMd9WSNtErDdid5OplDkRYiATUAlSq6GVGuqAuppotifewXBPpOoGGQ0c2M6nljfjnfTW-y8I28fZmWqvSEsE-jRi9GjFfehKQ-xglkTO_sgLjsboI3zn2bfTfvFsWPROQpNN3eQpq6Dj6POv5EwKXBnpY1Ru5cKyXEf8f4uehq-P3EyFj0g6R7VmbVtWTSZQ6ILxdAuMJungrT6l4VVW01rnXjf6CYScGUc-OVDVcFNjdbfWeF7gHt0eHEXeNLvF_oBn3sRORrNJieEit_SgmRNVgc_UARQ0FfQ",
+  "access_token": "3be8e45ac5084c8a8d8fd57815cb9e91",
+  "token_type": "Bearer",
+  "scope": "openid",
+  "expires_in": 600
+}
+
+[idp] POST /token
+Host: idp:8001
+Authorization: Basic YWNtZS1hZ2VudDphY21lLWFnZW50LWlkcC1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange
+&requested_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid-jag
+&audience=http%3A%2F%2Fas%3A8002
+&resource=http%3A%2F%2Fgateway%3A3000%2Fmcp
+&scope=notes.read+notes.write
+&subject_token=eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwOi8vaWRwOjgwMDEiLCJzdWIiOiJVLTEwMDIiLCJhdWQiOiJhY21lLWFnZW50IiwiZW1haWwiOiJib2JAYWNtZS5leGFtcGxlIiwiZ3JvdXBzIjpbImNvbnRyYWN0b3JzIl0sImlhdCI6MTc5MDcwMDcyNCwiYXV0aF90aW1lIjoxNzkwNzAwNzI0LCJleHAiOjE3OTA3MDEzMjQsImFtciI6WyJwd2QiXX0.M4fSLmT_tyxuXfJaz66sm-dedxixmXVSA8dAFVS70TfnrCycjicMd9WSNtErDdid5OplDkRYiATUAlSq6GVGuqAuppotifewXBPpOoGGQ0c2M6nljfjnfTW-y8I28fZmWqvSEsE-jRi9GjFfehKQ-xglkTO_sgLjsboI3zn2bfTfvFsWPROQpNN3eQpq6Dj6POv5EwKXBnpY1Ru5cKyXEf8f4uehq-P3EyFj0g6R7VmbVtWTSZQ6ILxdAuMJungrT6l4VVW01rnXjf6CYScGUc-OVDVcFNjdbfWeF7gHt0eHEXeNLvF_oBn3sRORrNJieEit_SgmRNVgc_UARQ0FfQ
+&subject_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid_token
+--> 200
+{
+  "issued_token_type": "urn:ietf:params:oauth:token-type:id-jag",
+  "access_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJvYXV0aC1pZC1qYWcrand0In0.eyJqdGkiOiJiZGQ0Y2M4NmVmNDU0NzRiYjk2ZjgyMTFmZGI5NTgxOSIsImlzcyI6Imh0dHA6Ly9pZHA6ODAwMSIsInN1YiI6IlUtMTAwMiIsImVtYWlsIjoiYm9iQGFjbWUuZXhhbXBsZSIsImF1ZCI6Imh0dHA6Ly9hczo4MDAyIiwiY2xpZW50X2lkIjoiYWNtZS1hZ2VudC1ub3RlcyIsInNjb3BlIjoibm90ZXMucmVhZCIsImlhdCI6MTc5MDcwMDcyNCwiZXhwIjoxNzkwNzAxMDI0LCJhdXRoX3RpbWUiOjE3OTA3MDA3MjQsImFtciI6WyJwd2QiXSwicmVzb3VyY2UiOiJodHRwOi8vZ2F0ZXdheTozMDAwL21jcCJ9.g8FT-czqdhBxySv-INjrsidRF-p1LqVvoBjibzoxCC7RqRzKM-lNYmreq5AQSwg-Yv6dMB7BZogku0Hek489hHRbGNfyIrgU4dyfVsMIc14oJfHEFljuAcqnXSZZNuC82ZW4ArmaeuA_FyGtt9ra2IlGGoCB3_SDgzymrNKIQyBCphmmZ0rU6IDoYHfN9XdpKoKt8RpSgEdJ2T5O8PIrdVJVWErLhwGBcm7OHTAlFOGEoYYz2fRJazQZuismSzHQ7b6SaUGj62MoZ9W_-nF-EUli4AGrvRFg97YE-AxEAsoVnqCy_5gXvdeohQ9FhfVyBJxuxrVcFPGr45oal-8QBQ",
+  "token_type": "N_A",
+  "scope": "notes.read",
+  "expires_in": 300
+}
+
+[idp] GET /.well-known/oauth-authorization-server
+Host: idp:8001
+--> 200
+{
+  "issuer": "http://idp:8001",
+  "token_endpoint": "http://idp:8001/token",
+  "jwks_uri": "http://idp:8001/jwks.json",
+  "grant_types_supported": [
+    "password",
+    "urn:ietf:params:oauth:grant-type:token-exchange"
+  ],
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic",
+    "client_secret_post"
+  ],
+  "identity_chaining_requested_token_types_supported": [
+    "urn:ietf:params:oauth:token-type:id-jag"
+  ]
+}
+
+[idp] POST /token
+Host: idp:8001
+Authorization: Basic YWNtZS1hZ2VudDphY21lLWFnZW50LWlkcC1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password
+&username=carol
+&password=carol
+&scope=openid
+--> 200
+{
+  "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwOi8vaWRwOjgwMDEiLCJzdWIiOiJVLTEwMDMiLCJhdWQiOiJhY21lLWFnZW50IiwiZW1haWwiOiJjYXJvbEBhY21lLmV4YW1wbGUiLCJncm91cHMiOlsic2FsZXMiXSwiaWF0IjoxNzkwNzAwNzI1LCJhdXRoX3RpbWUiOjE3OTA3MDA3MjUsImV4cCI6MTc5MDcwMTMyNSwiYW1yIjpbInB3ZCJdfQ.CPbzXjQb52sAK0zLAM3mkZ0ZYUv-Z53fECcqfYB_DrLA8zWAvLDWSI37kTcLkKn5pgSEFznFLDIIOh5baIZyorhRtqET6ceXhHNPJfrDH4RucWW0Fg7nzL7QGylZc-vsdTIyKGcCCt_Q4nndvA8jxcq-aTSo9fRxLWMVWDBdizWD0wTCcEhIZILQZnwpGAlKJ97_ZeMKgvbZp3Gt8nwgK8XDIIlINPRbaQctlxvLUcGAfqVMaNECTanMK7mjpcNxpuHnO4tRWMtT69bOUAfNh7LR6JRNXXemIIJ4cK4IWUOB2CdhBKxQl35Ex4CXAXHmDmmm6ZAjGnOaLbd7rcTcZA",
+  "access_token": "9d42107861834cdfa8a204028b8f06db",
+  "token_type": "Bearer",
+  "scope": "openid",
+  "expires_in": 600
+}
+
+[idp] POST /token
+Host: idp:8001
+Authorization: Basic YWNtZS1hZ2VudDphY21lLWFnZW50LWlkcC1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange
+&requested_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid-jag
+&audience=http%3A%2F%2Fas%3A8002
+&resource=http%3A%2F%2Fgateway%3A3000%2Fmcp
+&scope=notes.read+notes.write
+&subject_token=eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwOi8vaWRwOjgwMDEiLCJzdWIiOiJVLTEwMDMiLCJhdWQiOiJhY21lLWFnZW50IiwiZW1haWwiOiJjYXJvbEBhY21lLmV4YW1wbGUiLCJncm91cHMiOlsic2FsZXMiXSwiaWF0IjoxNzkwNzAwNzI1LCJhdXRoX3RpbWUiOjE3OTA3MDA3MjUsImV4cCI6MTc5MDcwMTMyNSwiYW1yIjpbInB3ZCJdfQ.CPbzXjQb52sAK0zLAM3mkZ0ZYUv-Z53fECcqfYB_DrLA8zWAvLDWSI37kTcLkKn5pgSEFznFLDIIOh5baIZyorhRtqET6ceXhHNPJfrDH4RucWW0Fg7nzL7QGylZc-vsdTIyKGcCCt_Q4nndvA8jxcq-aTSo9fRxLWMVWDBdizWD0wTCcEhIZILQZnwpGAlKJ97_ZeMKgvbZp3Gt8nwgK8XDIIlINPRbaQctlxvLUcGAfqVMaNECTanMK7mjpcNxpuHnO4tRWMtT69bOUAfNh7LR6JRNXXemIIJ4cK4IWUOB2CdhBKxQl35Ex4CXAXHmDmmm6ZAjGnOaLbd7rcTcZA
+&subject_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid_token
+--> 400
+{
+  "error": "invalid_grant",
+  "error_description": "policy: groups ['sales'] have no access to http://as:8002"
+}
+
+[idp] GET /.well-known/oauth-authorization-server
+Host: idp:8001
+--> 200
+{
+  "issuer": "http://idp:8001",
+  "token_endpoint": "http://idp:8001/token",
+  "jwks_uri": "http://idp:8001/jwks.json",
+  "grant_types_supported": [
+    "password",
+    "urn:ietf:params:oauth:grant-type:token-exchange"
+  ],
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic",
+    "client_secret_post"
+  ],
+  "identity_chaining_requested_token_types_supported": [
+    "urn:ietf:params:oauth:token-type:id-jag"
+  ]
+}
+
+[idp] POST /token
+Host: idp:8001
+Authorization: Basic YWNtZS1hZ2VudDphY21lLWFnZW50LWlkcC1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password
+&username=alice
+&password=alice
+&scope=openid
+--> 200
+{
+  "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwOi8vaWRwOjgwMDEiLCJzdWIiOiJVLTEwMDEiLCJhdWQiOiJhY21lLWFnZW50IiwiZW1haWwiOiJhbGljZUBhY21lLmV4YW1wbGUiLCJncm91cHMiOlsiZW5naW5lZXJpbmciXSwiaWF0IjoxNzkwNzAwNzI1LCJhdXRoX3RpbWUiOjE3OTA3MDA3MjUsImV4cCI6MTc5MDcwMTMyNSwiYW1yIjpbInB3ZCJdfQ.MQUPn61uBX2OmR8Fs3E0H3_mHXmiNN6VmhQO4bOXe5vXfQVxCRO3UIHQUYE73xX3D38tZXm9BFGUwbKeYulpC1CHVZ6tcoAjFZozxf7tkUsBElVl5urSX52jOnVIyFSFjfNmGbUKBRbge4QLY9D5d74D30wHDGVyaCMu70QezER6qDEVduCZw-u_VzCXwikkaKNlPowPRw4eTvhHw4MWBFhbAEOqBc0_B3b53r4wQSao7Zx7R2Sd7y7xDklx5I3yQk8MAfAT3R2GXWpZ27Y3uDERFzRpc_evJJ6FNTwj_laEFYX2HBkTsIghTcsNG3CwylkPCTc037ocG7PBg5O6dw",
+  "access_token": "bf67083560f14358b9cbd29e7cc625c3",
+  "token_type": "Bearer",
+  "scope": "openid",
+  "expires_in": 600
+}
+
+[idp] POST /token
+Host: idp:8001
+Authorization: Basic YWNtZS1hZ2VudDphY21lLWFnZW50LWlkcC1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange
+&requested_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid-jag
+&audience=http%3A%2F%2Fas%3A8002
+&resource=http%3A%2F%2Fgateway%3A3000%2Fmcp
+&scope=notes.read+notes.write
+&subject_token=eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwOi8vaWRwOjgwMDEiLCJzdWIiOiJVLTEwMDEiLCJhdWQiOiJhY21lLWFnZW50IiwiZW1haWwiOiJhbGljZUBhY21lLmV4YW1wbGUiLCJncm91cHMiOlsiZW5naW5lZXJpbmciXSwiaWF0IjoxNzkwNzAwNzI1LCJhdXRoX3RpbWUiOjE3OTA3MDA3MjUsImV4cCI6MTc5MDcwMTMyNSwiYW1yIjpbInB3ZCJdfQ.MQUPn61uBX2OmR8Fs3E0H3_mHXmiNN6VmhQO4bOXe5vXfQVxCRO3UIHQUYE73xX3D38tZXm9BFGUwbKeYulpC1CHVZ6tcoAjFZozxf7tkUsBElVl5urSX52jOnVIyFSFjfNmGbUKBRbge4QLY9D5d74D30wHDGVyaCMu70QezER6qDEVduCZw-u_VzCXwikkaKNlPowPRw4eTvhHw4MWBFhbAEOqBc0_B3b53r4wQSao7Zx7R2Sd7y7xDklx5I3yQk8MAfAT3R2GXWpZ27Y3uDERFzRpc_evJJ6FNTwj_laEFYX2HBkTsIghTcsNG3CwylkPCTc037ocG7PBg5O6dw
+&subject_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid_token
+--> 200
+{
+  "issued_token_type": "urn:ietf:params:oauth:token-type:id-jag",
+  "access_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJvYXV0aC1pZC1qYWcrand0In0.eyJqdGkiOiJhY2Y3YTY1ZDhmZTM0NjI1ODdlYTczNWE2ODJjNDYwZiIsImlzcyI6Imh0dHA6Ly9pZHA6ODAwMSIsInN1YiI6IlUtMTAwMSIsImVtYWlsIjoiYWxpY2VAYWNtZS5leGFtcGxlIiwiYXVkIjoiaHR0cDovL2FzOjgwMDIiLCJjbGllbnRfaWQiOiJhY21lLWFnZW50LW5vdGVzIiwic2NvcGUiOiJub3Rlcy5yZWFkIG5vdGVzLndyaXRlIiwiaWF0IjoxNzkwNzAwNzI1LCJleHAiOjE3OTA3MDEwMjUsImF1dGhfdGltZSI6MTc5MDcwMDcyNSwiYW1yIjpbInB3ZCJdLCJyZXNvdXJjZSI6Imh0dHA6Ly9nYXRld2F5OjMwMDAvbWNwIn0.BQGnkJ_5tqWtvyPYESsIsaljxq-fgeuD_BGLrxvKSuZiXEPJdNNYFrv_qPHpa0RnVIr-BxdPFVYZXgTSuOYM-kr2wgBfkcF27_auaRAtLNwenmut9uxKYV56GL_te7tvsgR_e0gLxGy0Xl0UQm0nvwsbrhbxkf31doUR1s-DGXmdRO9WvqjBhVBE9N2EoQirpOXNU6WQo4qFXfI0VmMmQmKMBNh9cmjt6PqpY4ZAAZeXwJMrc4vyuYM49zrjuojnirION9GxEZLaS1gOelMs92jfLuYezknp9QJOI1Tpx9Ex7BrVKj5szUvsD4CZboK_JPwvVFgNbtnjmlWL6S4r-w",
+  "token_type": "N_A",
+  "scope": "notes.read notes.write",
+  "expires_in": 300
+}
+
+[idp] POST /token
+Host: idp:8001
+Authorization: Basic YWNtZS1hZ2VudDphY21lLWFnZW50LWlkcC1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange
+&requested_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid-jag
+&audience=http%3A%2F%2Fevil-as.example
+&subject_token=eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwOi8vaWRwOjgwMDEiLCJzdWIiOiJVLTEwMDEiLCJhdWQiOiJhY21lLWFnZW50IiwiZW1haWwiOiJhbGljZUBhY21lLmV4YW1wbGUiLCJncm91cHMiOlsiZW5naW5lZXJpbmciXSwiaWF0IjoxNzkwNzAwNzI1LCJhdXRoX3RpbWUiOjE3OTA3MDA3MjUsImV4cCI6MTc5MDcwMTMyNSwiYW1yIjpbInB3ZCJdfQ.MQUPn61uBX2OmR8Fs3E0H3_mHXmiNN6VmhQO4bOXe5vXfQVxCRO3UIHQUYE73xX3D38tZXm9BFGUwbKeYulpC1CHVZ6tcoAjFZozxf7tkUsBElVl5urSX52jOnVIyFSFjfNmGbUKBRbge4QLY9D5d74D30wHDGVyaCMu70QezER6qDEVduCZw-u_VzCXwikkaKNlPowPRw4eTvhHw4MWBFhbAEOqBc0_B3b53r4wQSao7Zx7R2Sd7y7xDklx5I3yQk8MAfAT3R2GXWpZ27Y3uDERFzRpc_evJJ6FNTwj_laEFYX2HBkTsIghTcsNG3CwylkPCTc037ocG7PBg5O6dw
+&subject_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid_token
+--> 400
+{
+  "error": "invalid_target",
+  "error_description": "no trust relationship with http://evil-as.example"
+}
+
+[idp] POST /token
+Host: idp:8001
+Authorization: Basic YWNtZS1hZ2VudDphY21lLWFnZW50LWlkcC1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password
+&username=alice
+&password=alice
+&scope=openid
+--> 200
+{
+  "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwOi8vaWRwOjgwMDEiLCJzdWIiOiJVLTEwMDEiLCJhdWQiOiJhY21lLWFnZW50IiwiZW1haWwiOiJhbGljZUBhY21lLmV4YW1wbGUiLCJncm91cHMiOlsiZW5naW5lZXJpbmciXSwiaWF0IjoxNzkwNzAwNzI2LCJhdXRoX3RpbWUiOjE3OTA3MDA3MjYsImV4cCI6MTc5MDcwMTMyNiwiYW1yIjpbInB3ZCJdfQ.Y402DsggHTy6ORCWlat2ofSCd9YvfXX8MLJOB5595nSbjf-nti79Us0dGi4_bIRjnhYpYd3bSIABXDt6cnP43hOSDWGMbZEcguuv88FPPtd59Bf8Y9L6pCD3J0CTmUhl9-gbQJqOAb4gzIgAS6e7kqPv-MSdCOo7d7ED56RxhX1Ju_tMvU4qxK094NTRvp4lzrIzMpbfkWep5cRmzKHtT2cU1PtcKHzY6Egp4vK7lHAhG9YCLYlqB6yF55k4hzSM4hHgg2AXTA53U-zXTrVwD4LJH_mVLdvHgOeW6-5dZ8cNRrAfgc2Rh14KDW1-21km33n2jeyXyXUlkrsgn6-a8Q",
+  "access_token": "7a988ded3b5e4f049d84360cde8f1167",
+  "token_type": "Bearer",
+  "scope": "openid",
+  "expires_in": 600
+}
+
+[idp] POST /token
+Host: idp:8001
+Authorization: Basic YWNtZS1hZ2VudDphY21lLWFnZW50LWlkcC1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange
+&subject_token=eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwOi8vaWRwOjgwMDEiLCJzdWIiOiJVLTEwMDEiLCJhdWQiOiJhY21lLWFnZW50IiwiZW1haWwiOiJhbGljZUBhY21lLmV4YW1wbGUiLCJncm91cHMiOlsiZW5naW5lZXJpbmciXSwiaWF0IjoxNzkwNzAwNzI2LCJhdXRoX3RpbWUiOjE3OTA3MDA3MjYsImV4cCI6MTc5MDcwMTMyNiwiYW1yIjpbInB3ZCJdfQ.Y402DsggHTy6ORCWlat2ofSCd9YvfXX8MLJOB5595nSbjf-nti79Us0dGi4_bIRjnhYpYd3bSIABXDt6cnP43hOSDWGMbZEcguuv88FPPtd59Bf8Y9L6pCD3J0CTmUhl9-gbQJqOAb4gzIgAS6e7kqPv-MSdCOo7d7ED56RxhX1Ju_tMvU4qxK094NTRvp4lzrIzMpbfkWep5cRmzKHtT2cU1PtcKHzY6Egp4vK7lHAhG9YCLYlqB6yF55k4hzSM4hHgg2AXTA53U-zXTrVwD4LJH_mVLdvHgOeW6-5dZ8cNRrAfgc2Rh14KDW1-21km33n2jeyXyXUlkrsgn6-a8Q
+&subject_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid_token
+&requested_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid-jag
+&audience=http%3A%2F%2Fas%3A8002
+&scope=notes.read+notes.write
+&resource=http%3A%2F%2Fgateway%3A3000%2Fmcp
+--> 200
+{
+  "issued_token_type": "urn:ietf:params:oauth:token-type:id-jag",
+  "access_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJvYXV0aC1pZC1qYWcrand0In0.eyJqdGkiOiIxNDczOGRjMjUxNjc0YmEyOWUwZjc5NjY5MWQxZTNkNCIsImlzcyI6Imh0dHA6Ly9pZHA6ODAwMSIsInN1YiI6IlUtMTAwMSIsImVtYWlsIjoiYWxpY2VAYWNtZS5leGFtcGxlIiwiYXVkIjoiaHR0cDovL2FzOjgwMDIiLCJjbGllbnRfaWQiOiJhY21lLWFnZW50LW5vdGVzIiwic2NvcGUiOiJub3Rlcy5yZWFkIG5vdGVzLndyaXRlIiwiaWF0IjoxNzkwNzAwNzI2LCJleHAiOjE3OTA3MDEwMjYsImF1dGhfdGltZSI6MTc5MDcwMDcyNiwiYW1yIjpbInB3ZCJdLCJyZXNvdXJjZSI6Imh0dHA6Ly9nYXRld2F5OjMwMDAvbWNwIn0.Yx3dhlZfM3FEIVrrVvD170dQ-uNCRtwOXIiPcHn4v9p3J6S6BiqUdNJ5prWTPeD-QyAc8j7YMWiB9IYtm4SFX-BcCJMWSa51hwzLMPJvK2or7GM5zfKwNpBbgip7mnSzWAzM-tTz1sRVN-IyNTrNcjDHC91CZG-jSUx_oQ0gh2N0ga5YfE19L4UREIfQRZhWUFYWz6wD5t5PkHfcQBc9jQA7iH-AQQz_3wZ4Ci6D6DwgLIg1iigDxZX9uiBmhH87ZgBMxvdSvBxnWN3jVxAN-_xd1_AJT2vuMdq0aKXoGOlZm0AmMuqARGqvrhnZ3yhHoYXU1z69A38YHOq3n7m3Nw",
+  "token_type": "N_A",
+  "scope": "notes.read notes.write",
+  "expires_in": 300
+}
+

@@ -1,0 +1,63 @@
+# Enterprise-Managed Authorization (Cross App Access / ID-JAG) for MCP, locally.
+#
+#   idp        toy enterprise IdP: SSO + RFC 8693 token exchange -> ID-JAG
+#   as         toy resource authorization server: RFC 7523 jwt-bearer -> access token
+#   notes-mcp  tiny MCP server with two tools
+#   gateway    agentgateway v1.5.0 in front of notes-mcp
+#   client     one-shot MCP client that walks the whole flow and prints the wire
+#
+# Issuers use compose service names (http://idp:8001, http://as:8002), so the
+# client runs inside the network too: `docker compose run --rm client`.
+
+x-healthcheck: &hc
+  interval: 2s
+  timeout: 2s
+  retries: 20
+
+services:
+  idp:
+    build: ./services
+    image: mcp-oauth-xaa-services
+    command: ["python3", "idp.py"]
+    ports: ["48001:8001"]
+    healthcheck:
+      <<: *hc
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/healthz')"]
+
+  as:
+    image: mcp-oauth-xaa-services
+    command: ["python3", "ras.py"]
+    ports: ["48002:8002"]
+    depends_on:
+      idp: {condition: service_healthy}
+    healthcheck:
+      <<: *hc
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/healthz')"]
+
+  notes-mcp:
+    image: mcp-oauth-xaa-services
+    command: ["python3", "notes_mcp.py"]
+    depends_on:
+      idp: {condition: service_healthy}
+    healthcheck:
+      <<: *hc
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8003/healthz')"]
+
+  gateway:
+    image: cr.agentgateway.dev/agentgateway:v1.5.0
+    command: ["-f", "/config/agentgateway.yaml"]
+    volumes:
+      - ./config/agentgateway.yaml:/config/agentgateway.yaml:ro
+    ports: ["43000:3000", "43030:3030"]
+    depends_on:
+      as: {condition: service_healthy}
+      notes-mcp: {condition: service_healthy}
+
+  client:
+    image: mcp-oauth-xaa-services
+    entrypoint: ["python3", "client.py"]
+    volumes:
+      - ./captures:/captures
+    depends_on:
+      - gateway
+    profiles: ["client"]

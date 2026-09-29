@@ -1,0 +1,194 @@
+[notes-as] listening on :8002
+[notes-as] GET /jwks.json
+Host: as:8002
+--> 200
+{
+  "keys": [
+    {
+      "kty": "RSA",
+      "key_ops": [
+        "verify"
+      ],
+      "n": "mKAjMP-GzhnqznKGeVR2w5sgN8fSyEVvGODIEjdADS4RfEyZ-b3YL6ZfLukxwSTbp-0cnosQ61PnNR9yPJnkb8waPpRV9W4LqVqzJKPH67BtNshDi9ORqdJUaOEo2TNdCfhbQDl5FcLsxOzlpX6CE_p0LT6589K6IySqll3uZhp4Z01pxbrh6da5fH_07FwCRmHGsXQTY024677hM3g9hnWMunPS024Ssgo2MoVBNOTP_AOLf7tks-Aq_0FTkKUu9Fm9CanujOkhQ0WdiYN0OtF7x1Ie6K2Kf8a4CNBd7ATLuQCqxKmylhRGTLjWVzIOKFMB8SkEAPaRIM2fJACxfw",
+      "e": "AQAB",
+      "kid": "notes-as-1",
+      "use": "sig",
+      "alg": "RS256"
+    }
+  ]
+}
+
+[notes-as] GET /.well-known/oauth-authorization-server
+Host: as:8002
+--> 200
+{
+  "issuer": "http://as:8002",
+  "token_endpoint": "http://as:8002/token",
+  "jwks_uri": "http://as:8002/jwks.json",
+  "grant_types_supported": [
+    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+  ],
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic"
+  ],
+  "scopes_supported": [
+    "notes.read",
+    "notes.write"
+  ],
+  "authorization_grant_profiles_supported": [
+    "urn:ietf:params:oauth:grant-profile:id-jag"
+  ]
+}
+
+[notes-as] POST /token
+Host: as:8002
+Authorization: Basic YWNtZS1hZ2VudC1ub3RlczphY21lLWFnZW50LW5vdGVzLXJhcy1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer
+&assertion=eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJvYXV0aC1pZC1qYWcrand0In0.eyJqdGkiOiJlNDZjNjRkODI2NTI0ZmNiYWI4MzgyZWRjNjcxNzZkMiIsImlzcyI6Imh0dHA6Ly9pZHA6ODAwMSIsInN1YiI6IlUtMTAwMSIsImVtYWlsIjoiYWxpY2VAYWNtZS5leGFtcGxlIiwiYXVkIjoiaHR0cDovL2FzOjgwMDIiLCJjbGllbnRfaWQiOiJhY21lLWFnZW50LW5vdGVzIiwic2NvcGUiOiJub3Rlcy5yZWFkIG5vdGVzLndyaXRlIiwiaWF0IjoxNzkwNzAwNzI0LCJleHAiOjE3OTA3MDEwMjQsImF1dGhfdGltZSI6MTc5MDcwMDcyNCwiYW1yIjpbInB3ZCJdLCJyZXNvdXJjZSI6Imh0dHA6Ly9nYXRld2F5OjMwMDAvbWNwIn0.Rn0eglkK1LN--3lt8vE-GxDvvDrk9Qkx9681a6L3YE7ayeQbcmj_pEj-_8HkY_LOGbe-jiAUuM69Vas7xDpEMijgiWakhaSWopF9IjO8XSKlQiZSCDH7Slq9kpI3LVBV-4gzE5X1rRwwGmgJJU_O-hQF5X6NWnrSkTkITCZzey6glbPszyJqlWhgInDPZUEwIG2TS3u_32dwOyk3qlces77ahuYpoC5MrINvgsnYsLUtClyvIlLz9iFFR881qfMTaOT13MGal6vyLdLukAFUbTbDFf780XH8TlX-0Wl92By0u2FNFMyx9lxaSbomvsP8Rd1SmtLqOQjdVWSzgqTKfg
+--> 200
+{
+  "token_type": "Bearer",
+  "access_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6Im5vdGVzLWFzLTEiLCJ0eXAiOiJhdCtqd3QifQ.eyJpc3MiOiJodHRwOi8vYXM6ODAwMiIsInN1YiI6IlUtMTAwMSIsImF1ZCI6Imh0dHA6Ly9nYXRld2F5OjMwMDAvbWNwIiwiY2xpZW50X2lkIjoiYWNtZS1hZ2VudC1ub3RlcyIsInNjb3BlIjoibm90ZXMucmVhZCBub3Rlcy53cml0ZSIsImVtYWlsIjoiYWxpY2VAYWNtZS5leGFtcGxlIiwiaWRwIjoiaHR0cDovL2lkcDo4MDAxIiwianRpIjoiYjMwYTgwNmMwMjgzNDk0MThjMjdlZmJhMGY5MDgxNjUiLCJpYXQiOjE3OTA3MDA3MjQsImV4cCI6MTc5MDcwMTAyNH0.Dxniczt0Xm80bEkGCnB8vHvJvcGbs4ikVWP8XsX44yBvMfbBPWdKiPpNlFyvuUZ2NZjcJpyNvc_V1TT3Yoi9M2E23Ekvr7QqWrL6mYZ-eYGngJuL9rCDFtLoGlX0aM_AdmcAAl4WO3hOWCt33P4t1XydfEediuxR-Pq2HNDFMWEUuuTU9lMwB-HbPvtRZqKKkMqen6MWckqVFYjWwP3BR6amIj9Lu0q9BcBaVkO9Kaoa9F9GIs5l0vjW6Yz_pD-TgmPdYbKv-apbCOYGoc18jVJmoruM1NJnOrSrg6qjf-a9gAiaYzFom1QDVBu5MX7PxNzcmU0QtyRUXIKozmDuDw",
+  "expires_in": 300,
+  "scope": "notes.read notes.write"
+}
+
+[notes-as] GET /.well-known/oauth-authorization-server
+Host: as:8002
+--> 200
+{
+  "issuer": "http://as:8002",
+  "token_endpoint": "http://as:8002/token",
+  "jwks_uri": "http://as:8002/jwks.json",
+  "grant_types_supported": [
+    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+  ],
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic"
+  ],
+  "scopes_supported": [
+    "notes.read",
+    "notes.write"
+  ],
+  "authorization_grant_profiles_supported": [
+    "urn:ietf:params:oauth:grant-profile:id-jag"
+  ]
+}
+
+[notes-as] POST /token
+Host: as:8002
+Authorization: Basic YWNtZS1hZ2VudC1ub3RlczphY21lLWFnZW50LW5vdGVzLXJhcy1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer
+&assertion=eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJvYXV0aC1pZC1qYWcrand0In0.eyJqdGkiOiJiZGQ0Y2M4NmVmNDU0NzRiYjk2ZjgyMTFmZGI5NTgxOSIsImlzcyI6Imh0dHA6Ly9pZHA6ODAwMSIsInN1YiI6IlUtMTAwMiIsImVtYWlsIjoiYm9iQGFjbWUuZXhhbXBsZSIsImF1ZCI6Imh0dHA6Ly9hczo4MDAyIiwiY2xpZW50X2lkIjoiYWNtZS1hZ2VudC1ub3RlcyIsInNjb3BlIjoibm90ZXMucmVhZCIsImlhdCI6MTc5MDcwMDcyNCwiZXhwIjoxNzkwNzAxMDI0LCJhdXRoX3RpbWUiOjE3OTA3MDA3MjQsImFtciI6WyJwd2QiXSwicmVzb3VyY2UiOiJodHRwOi8vZ2F0ZXdheTozMDAwL21jcCJ9.g8FT-czqdhBxySv-INjrsidRF-p1LqVvoBjibzoxCC7RqRzKM-lNYmreq5AQSwg-Yv6dMB7BZogku0Hek489hHRbGNfyIrgU4dyfVsMIc14oJfHEFljuAcqnXSZZNuC82ZW4ArmaeuA_FyGtt9ra2IlGGoCB3_SDgzymrNKIQyBCphmmZ0rU6IDoYHfN9XdpKoKt8RpSgEdJ2T5O8PIrdVJVWErLhwGBcm7OHTAlFOGEoYYz2fRJazQZuismSzHQ7b6SaUGj62MoZ9W_-nF-EUli4AGrvRFg97YE-AxEAsoVnqCy_5gXvdeohQ9FhfVyBJxuxrVcFPGr45oal-8QBQ
+--> 200
+{
+  "token_type": "Bearer",
+  "access_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6Im5vdGVzLWFzLTEiLCJ0eXAiOiJhdCtqd3QifQ.eyJpc3MiOiJodHRwOi8vYXM6ODAwMiIsInN1YiI6IlUtMTAwMiIsImF1ZCI6Imh0dHA6Ly9nYXRld2F5OjMwMDAvbWNwIiwiY2xpZW50X2lkIjoiYWNtZS1hZ2VudC1ub3RlcyIsInNjb3BlIjoibm90ZXMucmVhZCIsImVtYWlsIjoiYm9iQGFjbWUuZXhhbXBsZSIsImlkcCI6Imh0dHA6Ly9pZHA6ODAwMSIsImp0aSI6IjM2NzYzYTk1ZGJmYjQ0YTY5ODI0YmQxMjg5OTEwYTE0IiwiaWF0IjoxNzkwNzAwNzI0LCJleHAiOjE3OTA3MDEwMjR9.aJ1icNoUU-dFaqcAFz7Q6W0B_3dIl1qBLjGQmMJAUR7o6dnJ06A0whQzKUHOP7yd4hjp-7asZo9pwMXG-tAr8tiCASKZhzlUgoOE3xXegsgyrKsJ76J_bqw7PhFncuRINn4oO9JeZ0Q6HbRJRQCt6r0LL5XMAYWz3ZiG2DpDf1TeyANM2WhxwR2iGJMORtBOXur48w16pVptjjxITc8ZD7zrKfOzyA8DHdwKGo-7Ginfh6srUPAsCgdUe7FAL4FL2PSZWJKkKMIygFux0_j2hf6A23JgdDZmlusY4YgS-NVohpqT4p9gz5FG2VK8TwkmJ4UISr5FlHtTiCDiBf_DwQ",
+  "expires_in": 300,
+  "scope": "notes.read"
+}
+
+[notes-as] GET /.well-known/oauth-authorization-server
+Host: as:8002
+--> 200
+{
+  "issuer": "http://as:8002",
+  "token_endpoint": "http://as:8002/token",
+  "jwks_uri": "http://as:8002/jwks.json",
+  "grant_types_supported": [
+    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+  ],
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic"
+  ],
+  "scopes_supported": [
+    "notes.read",
+    "notes.write"
+  ],
+  "authorization_grant_profiles_supported": [
+    "urn:ietf:params:oauth:grant-profile:id-jag"
+  ]
+}
+
+[notes-as] GET /.well-known/oauth-authorization-server
+Host: as:8002
+--> 200
+{
+  "issuer": "http://as:8002",
+  "token_endpoint": "http://as:8002/token",
+  "jwks_uri": "http://as:8002/jwks.json",
+  "grant_types_supported": [
+    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+  ],
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic"
+  ],
+  "scopes_supported": [
+    "notes.read",
+    "notes.write"
+  ],
+  "authorization_grant_profiles_supported": [
+    "urn:ietf:params:oauth:grant-profile:id-jag"
+  ]
+}
+
+[notes-as] POST /token
+Host: as:8002
+Authorization: Basic YWNtZS1hZ2VudC1ub3RlczphY21lLWFnZW50LW5vdGVzLXJhcy1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer
+&assertion=eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJvYXV0aC1pZC1qYWcrand0In0.eyJqdGkiOiJhY2Y3YTY1ZDhmZTM0NjI1ODdlYTczNWE2ODJjNDYwZiIsImlzcyI6Imh0dHA6Ly9pZHA6ODAwMSIsInN1YiI6IlUtMTAwMSIsImVtYWlsIjoiYWxpY2VAYWNtZS5leGFtcGxlIiwiYXVkIjoiaHR0cDovL2FzOjgwMDIiLCJjbGllbnRfaWQiOiJhY21lLWFnZW50LW5vdGVzIiwic2NvcGUiOiJub3Rlcy5yZWFkIG5vdGVzLndyaXRlIiwiaWF0IjoxNzkwNzAwNzI1LCJleHAiOjE3OTA3MDEwMjUsImF1dGhfdGltZSI6MTc5MDcwMDcyNSwiYW1yIjpbInB3ZCJdLCJyZXNvdXJjZSI6Imh0dHA6Ly9nYXRld2F5OjMwMDAvbWNwIn0.BQGnkJ_5tqWtvyPYESsIsaljxq-fgeuD_BGLrxvKSuZiXEPJdNNYFrv_qPHpa0RnVIr-BxdPFVYZXgTSuOYM-kr2wgBfkcF27_auaRAtLNwenmut9uxKYV56GL_te7tvsgR_e0gLxGy0Xl0UQm0nvwsbrhbxkf31doUR1s-DGXmdRO9WvqjBhVBE9N2EoQirpOXNU6WQo4qFXfI0VmMmQmKMBNh9cmjt6PqpY4ZAAZeXwJMrc4vyuYM49zrjuojnirION9GxEZLaS1gOelMs92jfLuYezknp9QJOI1Tpx9Ex7BrVKj5szUvsD4CZboK_JPwvVFgNbtnjmlWL6S4r-w
+--> 200
+{
+  "token_type": "Bearer",
+  "access_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6Im5vdGVzLWFzLTEiLCJ0eXAiOiJhdCtqd3QifQ.eyJpc3MiOiJodHRwOi8vYXM6ODAwMiIsInN1YiI6IlUtMTAwMSIsImF1ZCI6Imh0dHA6Ly9nYXRld2F5OjMwMDAvbWNwIiwiY2xpZW50X2lkIjoiYWNtZS1hZ2VudC1ub3RlcyIsInNjb3BlIjoibm90ZXMucmVhZCBub3Rlcy53cml0ZSIsImVtYWlsIjoiYWxpY2VAYWNtZS5leGFtcGxlIiwiaWRwIjoiaHR0cDovL2lkcDo4MDAxIiwianRpIjoiYzNhMzU0ZDM0NDkwNDVjN2JhZTA4NzEyYWJkMDY3NTkiLCJpYXQiOjE3OTA3MDA3MjUsImV4cCI6MTc5MDcwMTAyNX0.QTf361oCw4uSmEVHHitSDfcb4AeASnWS_ZYyzH7FoKZv-BuwI8hQMOstlub2KM_q9Zd9hDLaLi1atAKO1zeokGguoMy-CdqclMrWJJSG8D_Ckh-B-tNAJiVuTOpxgGV2PZMxCcgqoVJcI-7VwbX-4wMCqQVJXx-9y_MghAjOvxQAXO5Z44hCgQWGWxb-BAca9Hes_s_s1IQwUaKzZC1-rErbr7TXselApXIDYC4pE5mIj2l14agPxyMkr50GhFeNTNf1F6w5FIpwp6HK-fMEY9mFwNqsIRVU4uQ-5lsEIFrvULXI6IV8FpoKuEQByedCINsokweDoOdI7k8uFl0cbw",
+  "expires_in": 300,
+  "scope": "notes.read notes.write"
+}
+
+[notes-as] POST /token
+Host: as:8002
+Authorization: Basic YWNtZS1hZ2VudC1ub3RlczphY21lLWFnZW50LW5vdGVzLXJhcy1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer
+&assertion=eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJvYXV0aC1pZC1qYWcrand0In0.eyJqdGkiOiJhY2Y3YTY1ZDhmZTM0NjI1ODdlYTczNWE2ODJjNDYwZiIsImlzcyI6Imh0dHA6Ly9pZHA6ODAwMSIsInN1YiI6IlUtMTAwMSIsImVtYWlsIjoiYWxpY2VAYWNtZS5leGFtcGxlIiwiYXVkIjoiaHR0cDovL2FzOjgwMDIiLCJjbGllbnRfaWQiOiJhY21lLWFnZW50LW5vdGVzIiwic2NvcGUiOiJub3Rlcy5yZWFkIG5vdGVzLndyaXRlIiwiaWF0IjoxNzkwNzAwNzI1LCJleHAiOjE3OTA3MDEwMjUsImF1dGhfdGltZSI6MTc5MDcwMDcyNSwiYW1yIjpbInB3ZCJdLCJyZXNvdXJjZSI6Imh0dHA6Ly9nYXRld2F5OjMwMDAvbWNwIn0.BQGnkJ_5tqWtvyPYESsIsaljxq-fgeuD_BGLrxvKSuZiXEPJdNNYFrv_qPHpa0RnVIr-BxdPFVYZXgTSuOYM-kr2wgBfkcF27_auaRAtLNwenmut9uxKYV56GL_te7tvsgR_e0gLxGy0Xl0UQm0nvwsbrhbxkf31doUR1s-DGXmdRO9WvqjBhVBE9N2EoQirpOXNU6WQo4qFXfI0VmMmQmKMBNh9cmjt6PqpY4ZAAZeXwJMrc4vyuYM49zrjuojnirION9GxEZLaS1gOelMs92jfLuYezknp9QJOI1Tpx9Ex7BrVKj5szUvsD4CZboK_JPwvVFgNbtnjmlWL6S4r-w
+--> 400
+{
+  "error": "invalid_grant",
+  "error_description": "jti acf7a65d8fe3462587ea735a682c460f already used"
+}
+
+[notes-as] POST /token
+Host: as:8002
+Authorization: Basic YWNtZS1hZ2VudC1ub3RlczphY21lLWFnZW50LW5vdGVzLXJhcy1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer
+&assertion=eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwOi8vaWRwOjgwMDEiLCJzdWIiOiJVLTEwMDEiLCJhdWQiOiJhY21lLWFnZW50IiwiZW1haWwiOiJhbGljZUBhY21lLmV4YW1wbGUiLCJncm91cHMiOlsiZW5naW5lZXJpbmciXSwiaWF0IjoxNzkwNzAwNzI1LCJhdXRoX3RpbWUiOjE3OTA3MDA3MjUsImV4cCI6MTc5MDcwMTMyNSwiYW1yIjpbInB3ZCJdfQ.MQUPn61uBX2OmR8Fs3E0H3_mHXmiNN6VmhQO4bOXe5vXfQVxCRO3UIHQUYE73xX3D38tZXm9BFGUwbKeYulpC1CHVZ6tcoAjFZozxf7tkUsBElVl5urSX52jOnVIyFSFjfNmGbUKBRbge4QLY9D5d74D30wHDGVyaCMu70QezER6qDEVduCZw-u_VzCXwikkaKNlPowPRw4eTvhHw4MWBFhbAEOqBc0_B3b53r4wQSao7Zx7R2Sd7y7xDklx5I3yQk8MAfAT3R2GXWpZ27Y3uDERFzRpc_evJJ6FNTwj_laEFYX2HBkTsIghTcsNG3CwylkPCTc037ocG7PBg5O6dw
+--> 400
+{
+  "error": "invalid_grant",
+  "error_description": "typ must be oauth-id-jag+jwt, got JWT"
+}
+
+[notes-as] POST /token
+Host: as:8002
+Authorization: Basic YWNtZS1hZ2VudC1ub3RlczphY21lLWFnZW50LW5vdGVzLXJhcy1zZWNyZXQ=
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer
+&assertion=eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjbWUtaWRwLTEiLCJ0eXAiOiJvYXV0aC1pZC1qYWcrand0In0.eyJqdGkiOiIxNDczOGRjMjUxNjc0YmEyOWUwZjc5NjY5MWQxZTNkNCIsImlzcyI6Imh0dHA6Ly9pZHA6ODAwMSIsInN1YiI6IlUtMTAwMSIsImVtYWlsIjoiYWxpY2VAYWNtZS5leGFtcGxlIiwiYXVkIjoiaHR0cDovL2FzOjgwMDIiLCJjbGllbnRfaWQiOiJhY21lLWFnZW50LW5vdGVzIiwic2NvcGUiOiJub3Rlcy5yZWFkIG5vdGVzLndyaXRlIiwiaWF0IjoxNzkwNzAwNzI2LCJleHAiOjE3OTA3MDEwMjYsImF1dGhfdGltZSI6MTc5MDcwMDcyNiwiYW1yIjpbInB3ZCJdLCJyZXNvdXJjZSI6Imh0dHA6Ly9nYXRld2F5OjMwMDAvbWNwIn0.Yx3dhlZfM3FEIVrrVvD170dQ-uNCRtwOXIiPcHn4v9p3J6S6BiqUdNJ5prWTPeD-QyAc8j7YMWiB9IYtm4SFX-BcCJMWSa51hwzLMPJvK2or7GM5zfKwNpBbgip7mnSzWAzM-tTz1sRVN-IyNTrNcjDHC91CZG-jSUx_oQ0gh2N0ga5YfE19L4UREIfQRZhWUFYWz6wD5t5PkHfcQBc9jQA7iH-AQQz_3wZ4Ci6D6DwgLIg1iigDxZX9uiBmhH87ZgBMxvdSvBxnWN3jVxAN-_xd1_AJT2vuMdq0aKXoGOlZm0AmMuqARGqvrhnZ3yhHoYXU1z69A38YHOq3n7m3Nw
+--> 200
+{
+  "token_type": "Bearer",
+  "access_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6Im5vdGVzLWFzLTEiLCJ0eXAiOiJhdCtqd3QifQ.eyJpc3MiOiJodHRwOi8vYXM6ODAwMiIsInN1YiI6IlUtMTAwMSIsImF1ZCI6Imh0dHA6Ly9nYXRld2F5OjMwMDAvbWNwIiwiY2xpZW50X2lkIjoiYWNtZS1hZ2VudC1ub3RlcyIsInNjb3BlIjoibm90ZXMucmVhZCBub3Rlcy53cml0ZSIsImVtYWlsIjoiYWxpY2VAYWNtZS5leGFtcGxlIiwiaWRwIjoiaHR0cDovL2lkcDo4MDAxIiwianRpIjoiOGMxNDVlNjI5ODFlNDdhZWFiNDEyOGY1YmZjYjdlMDciLCJpYXQiOjE3OTA3MDA3MjYsImV4cCI6MTc5MDcwMTAyNn0.cdJcmgh13rJ9mf58FMzycsvX8DB0vOlZvz777nfj-wJNDsJUxzNpObkY4X8IRcVU6Qcki3toc-tsQPDaqOP4AQEYVq6YxCUMFxVGLtyyS8Uqx03FryY3eVWJKEA_prbE33WBYpLORcxIRobyz5yC1WjK9n0s_qCdHLoHUJS7-PE19-9LLFY6XlEREQj42DHVDzML_njP20OYWTDw-Pwbo6jJbCFOSRxgzKjfBxW3hahWNCKRXmEGEbC9qmIBY4G6V0GF43wIrCw7Oqn8J_OMtfE9UxFdoTOJROD_MNAduz17qtp2atC61v9_G6_Tw2oPMzFvtfLDHsm7HSuLaaz6uw",
+  "expires_in": 300,
+  "scope": "notes.read notes.write"
+}
+

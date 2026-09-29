@@ -1,0 +1,96 @@
+# yaml-language-server: $schema=https://agentgateway.dev/schema/config
+#
+# Two binds, one agentgateway process (v1.5.0).
+#
+#   :3000  The Notes MCP server's front door. agentgateway is the OAuth resource
+#          server here: it serves Protected Resource Metadata (RFC 9728), answers
+#          401 + WWW-Authenticate, validates the access token minted by the Notes
+#          AS, and filters tools by the token's scope.
+#
+#   :3030  agentgateway as the MCP *client* side of Cross App Access. It accepts
+#          the user's IdP ID token, runs both exchanges itself (token exchange at
+#          the IdP, jwt-bearer at the Notes AS), and forwards to :3000 with the
+#          resulting access token.
+#
+# Every field below is in schema/config.md at the v1.5.0 tag.
+binds:
+- port: 3000
+  listeners:
+  - protocol: HTTP
+    routes:
+    - name: notes-mcp
+      matches:
+      - path:
+          exact: /mcp
+      - path:
+          exact: /.well-known/oauth-protected-resource/mcp
+      policies:
+        mcpAuthentication:
+          mode: strict
+          issuer: http://as:8002
+          audiences:
+          - http://gateway:3000/mcp
+          jwks:
+            url: http://as:8002/jwks.json
+          resourceMetadata:
+            resource: http://gateway:3000/mcp
+            scopesSupported:
+            - notes.read
+            - notes.write
+            bearerMethodsSupported:
+            - header
+        mcpAuthorization:
+          rules:
+          - allow: 'mcp.tool.name == "list_notes" && "notes.read" in jwt.scope.split(" ")'
+          - allow: 'mcp.tool.name == "add_note" && "notes.write" in jwt.scope.split(" ")'
+      backends:
+      - mcp:
+          targets:
+          - name: notes
+            mcp:
+              host: http://notes-mcp:8003/mcp
+
+- port: 3030
+  listeners:
+  - protocol: HTTP
+    routes:
+    - name: xaa-client
+      policies:
+        # The inbound credential is the user's OIDC ID token from the Acme IdP,
+        # issued to the acme-agent client.
+        jwtAuth:
+          issuer: http://idp:8001
+          audiences:
+          - acme-agent
+          jwks:
+            url: http://idp:8001/jwks.json
+        backendAuth:
+          crossAppAccess:
+            # jwtAuth strips the validated token, so hand its raw value to the exchange.
+            subjectToken:
+              source:
+                expression: jwt.rawToken.unredacted()
+            identityProvider:
+              host: idp:8001
+              path: /token
+              clientAuth:
+                clientId: acme-agent
+                method: clientSecretBasic
+                clientSecret: acme-agent-idp-secret
+            resourceAuthorizationServer:
+              host: as:8002
+              path: /token
+              clientAuth:
+                clientId: acme-agent-notes
+                method: clientSecretBasic
+                clientSecret: acme-agent-notes-ras-secret
+            audience: http://as:8002
+            resources:
+            - http://gateway:3000/mcp
+            scopes:
+            - notes.read
+            - notes.write
+            # The Notes AS takes its scope from the ID-JAG; send none on leg 2.
+            accessTokenScopes: []
+      backends:
+      - host: localhost:3000

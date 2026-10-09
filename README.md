@@ -1,5 +1,7 @@
 # mcp-oauth-xaa
 
+> 📖 **Read the write-up:** [MCP Cross App Access Explained: The ID-JAG Exchange on the Wire](https://webofmike.com/mcp-oauth-xaa/)
+
 MCP Enterprise-Managed Authorization (Cross App Access, ID-JAG) running on your
 laptop: a toy enterprise IdP, a toy MCP authorization server, and an MCP server
 behind [agentgateway](https://agentgateway.dev) v1.5.0. One `docker compose`
